@@ -1,0 +1,50 @@
+body, html {
+  margin: 0;
+  padding: 0; }
+
+body::after {
+  content: "";
+  background: url(christmas-background.gif);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  height: 115%;
+  z-index: -1; }
+
+h1, h2, h3 {
+  font-family: 'Mountains of Christmas', cursive;
+  color: green; }
+
+.movie {
+  border-radius: 3px;
+  background-color: white;
+  margin: 20px;
+  padding: 10px; }
+  .movie img {
+    width: 200px; }
+  .movie .rating, .movie .date {
+    font-weight: bold; }
+  .movie .editMovie {
+    text-align: right;
+    color: green; }
+
+.movieList {
+  max-height: 600px;
+  overflow: scroll; }
+
+.movieForm {
+  border-radius: 3px;
+  border: 3px solid green;
+  padding: 10px;
+  margin: 20px; }
+
+.header {
+  text-align: center; }
+  .header h1 {
+    font-size: 100; }
+
+.editable {
+  border: 1px solid gray;
+  font-style: italic; }
