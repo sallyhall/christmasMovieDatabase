@@ -72,9 +72,11 @@ module.exports = Backbone.View.extend({
       rating: $("#movieRating").val(),
     };
     var newModel = new MovieModel(newMovie);
-    newModel.save();
-    this.collection.add(newModel);
-    this.addOne(newModel);      
+    var that = this;
+    newModel.save().then(function(){
+      that.collection.add(newModel);
+      that.addOne(newModel);
+    });
   },
   editMovieInfo: function (e) {
     e.preventDefault();

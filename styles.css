@@ -31,7 +31,7 @@ h1, h2, h3 {
     color: green; }
 
 .movieList {
-  max-height: 600px;
+  max-height: 650px;
   overflow: scroll; }
 
 .movieForm {
