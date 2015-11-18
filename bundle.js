@@ -57,9 +57,6 @@ module.exports = Backbone.View.extend({
   el: '.movies',
   events: {
     'click #imageUploadSubmit': 'submitForm',
-    'click .glyphicon-pencil': 'editMovieInfo',
-    'click .glyphicon-trash': 'deleteMovie',
-    'keypress .movie': 'updateMovie',
     'click .sort': 'sortMovies'
   },
   submitForm: function (e) {
@@ -72,38 +69,11 @@ module.exports = Backbone.View.extend({
       rating: $("#movieRating").val(),
     };
     var newModel = new MovieModel(newMovie);
-    newModel.save();
-    this.collection.add(newModel);
-    this.addOne(newModel);      
-  },
-  editMovieInfo: function (e) {
-    e.preventDefault();
-    $(e.target).parents(".movie").find("p").attr("contenteditable",true);
-    $(e.target).parents(".movie").find("h3").attr("contenteditable",true);
-    $(e.target).parents(".movie").find("p").toggleClass("editable");
-    $(e.target).parents(".movie").find("h3").toggleClass("editable");
-  },
-  updateMovie: function (e) {
-    if(e.charCode===13){
-      $(e.target).parents(".movie").find("p").attr("contenteditable",false);
-      $(e.target).parents(".movie").find("h3").attr("contenteditable",false);
-      $(e.target).parents(".movie").find("p").toggleClass("editable");
-      $(e.target).parents(".movie").find("h3").toggleClass("editable");
-      var id = $(e.target).parents("article").find(".editMovie").attr("id");
-      var movie = this.collection.get(id);
-      var title = $(e.target).parents(".movie").find("h3").text().trim();
-      var plot =$(e.target).parents(".movie").find(".plot").text().trim();
-      var release =$(e.target).parents(".movie").find(".date").text().trim();
-      var rating =$(e.target).parents(".movie").find(".rating").text().trim();
-      movie.save({title: title, plot:plot, release: release, rating:rating});
-    }
-  },
-  deleteMovie: function (e) {
-    e.preventDefault();
-    var id = $(e.target).parent().attr('id');
-    var movie = this.collection.get(id);
-    movie.destroy();
-    $(e.target).parents(".movie").remove();
+    var that=this;
+    newModel.save().then(function () {
+      that.collection.unshift(newModel);
+      that.addOne(newModel);
+    });
   },
   sortMovies: function(e){
     e.preventDefault();
@@ -148,6 +118,45 @@ module.exports = Backbone.View.extend({
   tagName: 'article',
   className: 'movie',
   template: _.template($('#movieTmpl').html()),
+  events: {
+    'click .glyphicon-pencil': 'editMovieInfo',
+    'click .glyphicon-trash': 'deleteMovie',
+    'keypress h3': 'updateMovie',
+    'keypress p': 'updateMovie'
+  },
+  editMovieInfo: function (e) {
+    e.preventDefault();
+    var movieEl = $(e.target).parents(".movie");
+    var movieP = $(movieEl).find("p");
+    var movieH = $(movieEl).find("h3");
+    movieP.attr("contenteditable",true);
+    movieH.attr("contenteditable",true);
+    movieP.toggleClass("editable");
+    movieH.toggleClass("editable");
+  },
+  updateMovie: function (e) {
+    if(e.charCode===13){
+      var movieEl = $(e.target).parents(".movie");
+      var movieP = $(movieEl).find("p");
+      var movieH = $(movieEl).find("h3");
+      movieP.attr("contenteditable",false);
+      movieH.attr("contenteditable",false);
+      movieP.toggleClass("editable");
+      movieH.toggleClass("editable");
+      var movie = this.model;
+      var title = movieH.text().trim();
+      var plot =movieEl.find(".plot").text().trim();
+      var release =movieEl.find(".date").text().trim();
+      var rating =movieEl.find(".rating").text().trim();
+      movie.save({title: title, plot:plot, release: release, rating:rating});
+    }
+  },
+  deleteMovie: function (e) {
+    var movieEl = $(e.target).parents(".movie");
+    var movie = this.model;
+    movie.destroy();
+    movieEl.remove();
+  },
   render: function () {
     var markup = this.template(this.model.toJSON());
     this.$el.html(markup);
