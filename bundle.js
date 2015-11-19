@@ -23,7 +23,6 @@ Backbone.$ = $;
 var _ = require('underscore');
 var tmpl = require('./templates');
 var MovieModel = require('./movie');
-var MovieCollectionView = require('./movieCollectionView');
 
 module.exports = Backbone.View.extend({
   className: "movieForm",
@@ -42,16 +41,13 @@ module.exports = Backbone.View.extend({
     };
     $("input").val("");
     var newModel = new MovieModel(newMovie);
-    var newCollectionView = new MovieCollectionView({collection:this.collection});
     var that=this;
     newModel.save().then(function () {
-      that.collection.unshift(newModel);
-      newCollectionView.addOne(newModel,"form");
+      that.collection.add(newModel);
     });
   },
   sortMovies: function(e){
     e.preventDefault();
-    var newCollectionView = new MovieCollectionView({collection:this.collection});
     var $button = $(e.target);
     $button.addClass("btn-success");
     $button.removeClass("btn-danger");
@@ -64,12 +60,10 @@ module.exports = Backbone.View.extend({
     }
     else{
       this.collection.comparator=function(a){
-        return a.get('rating');
+        return -1*a.get('rating');
       };
     }
     this.collection.sort();
-    this.$el.find(".movieList").html("");
-    newCollectionView.addAll();
   },
   initialize: function () {},
   template: _.template(tmpl.form),
@@ -81,7 +75,7 @@ module.exports = Backbone.View.extend({
 
 });
 
-},{"./movie":6,"./movieCollectionView":8,"./templates":13,"backbone":10,"jquery":11,"underscore":12}],3:[function(require,module,exports){
+},{"./movie":6,"./templates":13,"backbone":10,"jquery":11,"underscore":12}],3:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -167,6 +161,9 @@ module.exports = Backbone.Collection.extend({
     url: 'http://tiny-tiny.herokuapp.com/collections/christmasMovieDatabase',
     model: MovieModel,
     initialize: function () {
+    },
+    comparator: function(a){
+      return a.get("title");
     }
 });
 
@@ -181,8 +178,9 @@ var MovieModel = require('./movie')
 module.exports = Backbone.View.extend({
   el: '.movies',
   initialize: function () {
-    $(".movieList").html("");
     this.addAll();
+    this.listenTo(this.collection, 'change', this.addAll);
+    this.listenTo(this.collection, 'sort', this.addAll);
   },
   addOne: function (movieModel,addedBy) {
     var movieView = new MovieView({model: movieModel});
@@ -194,6 +192,7 @@ module.exports = Backbone.View.extend({
     }
   },
   addAll: function () {
+    $(".movieList").html("");
     _.each(this.collection.models, this.addOne, this);
   },
 })
@@ -217,14 +216,14 @@ module.exports = Backbone.View.extend({
   },
   editMovieInfo: function (e) {
     e.preventDefault();
-    var movieText = $(e.target).parents(".movie").find("p,h3");
+    var movieText = this.$el.find("p,h3");
     movieText.attr("contenteditable",true);
     movieText.toggleClass("editable");
 },
   updateMovie: function (e) {
     if(e.charCode===13){
-      var movieEl = $(e.target).parents(".movie");
-      var movieText = $(movieEl).find("p,h3");
+      var movieEl = this.$el;;
+      var movieText = movieEl.find("p,h3");
       movieText.attr("contenteditable",false);
       movieText.toggleClass("editable");
       var movie = this.model;
@@ -236,7 +235,7 @@ module.exports = Backbone.View.extend({
     }
   },
   deleteMovie: function (e) {
-    var movieEl = $(e.target).parents(".movie");
+    var movieEl = this.$el;
     var movie = this.model;
     movie.destroy();
     movieEl.remove();

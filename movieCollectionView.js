@@ -8,8 +8,9 @@ var MovieModel = require('./movie')
 module.exports = Backbone.View.extend({
   el: '.movies',
   initialize: function () {
-    $(".movieList").html("");
     this.addAll();
+    this.listenTo(this.collection, 'change', this.addAll);
+    this.listenTo(this.collection, 'sort', this.addAll);
   },
   addOne: function (movieModel,addedBy) {
     var movieView = new MovieView({model: movieModel});
@@ -21,6 +22,7 @@ module.exports = Backbone.View.extend({
     }
   },
   addAll: function () {
+    $(".movieList").html("");
     _.each(this.collection.models, this.addOne, this);
   },
 })

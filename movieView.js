@@ -16,14 +16,14 @@ module.exports = Backbone.View.extend({
   },
   editMovieInfo: function (e) {
     e.preventDefault();
-    var movieText = $(e.target).parents(".movie").find("p,h3");
+    var movieText = this.$el.find("p,h3");
     movieText.attr("contenteditable",true);
     movieText.toggleClass("editable");
 },
   updateMovie: function (e) {
     if(e.charCode===13){
-      var movieEl = $(e.target).parents(".movie");
-      var movieText = $(movieEl).find("p,h3");
+      var movieEl = this.$el;;
+      var movieText = movieEl.find("p,h3");
       movieText.attr("contenteditable",false);
       movieText.toggleClass("editable");
       var movie = this.model;
@@ -35,7 +35,7 @@ module.exports = Backbone.View.extend({
     }
   },
   deleteMovie: function (e) {
-    var movieEl = $(e.target).parents(".movie");
+    var movieEl = this.$el;
     var movie = this.model;
     movie.destroy();
     movieEl.remove();

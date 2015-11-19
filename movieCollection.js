@@ -7,5 +7,8 @@ module.exports = Backbone.Collection.extend({
     url: 'http://tiny-tiny.herokuapp.com/collections/christmasMovieDatabase',
     model: MovieModel,
     initialize: function () {
+    },
+    comparator: function(a){
+      return a.get("title");
     }
 });

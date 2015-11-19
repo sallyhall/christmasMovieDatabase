@@ -4,7 +4,6 @@ Backbone.$ = $;
 var _ = require('underscore');
 var tmpl = require('./templates');
 var MovieModel = require('./movie');
-var MovieCollectionView = require('./movieCollectionView');
 
 module.exports = Backbone.View.extend({
   className: "movieForm",
@@ -23,16 +22,13 @@ module.exports = Backbone.View.extend({
     };
     $("input").val("");
     var newModel = new MovieModel(newMovie);
-    var newCollectionView = new MovieCollectionView({collection:this.collection});
     var that=this;
     newModel.save().then(function () {
-      that.collection.unshift(newModel);
-      newCollectionView.addOne(newModel,"form");
+      that.collection.add(newModel);
     });
   },
   sortMovies: function(e){
     e.preventDefault();
-    var newCollectionView = new MovieCollectionView({collection:this.collection});
     var $button = $(e.target);
     $button.addClass("btn-success");
     $button.removeClass("btn-danger");
@@ -45,12 +41,10 @@ module.exports = Backbone.View.extend({
     }
     else{
       this.collection.comparator=function(a){
-        return a.get('rating');
+        return -1*a.get('rating');
       };
     }
     this.collection.sort();
-    this.$el.find(".movieList").html("");
-    newCollectionView.addAll();
   },
   initialize: function () {},
   template: _.template(tmpl.form),
