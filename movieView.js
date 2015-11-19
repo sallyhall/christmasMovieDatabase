@@ -2,38 +2,32 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var $ = require('jquery');
 Backbone.$ = $;
+var tmpl = require('./templates');
+
 
 module.exports = Backbone.View.extend({
   tagName: 'article',
   className: 'movie',
-  template: _.template($('#movieTmpl').html()),
+  template: _.template(tmpl.movie),
   events: {
     'click .glyphicon-pencil': 'editMovieInfo',
     'click .glyphicon-trash': 'deleteMovie',
-    'keypress h3': 'updateMovie',
-    'keypress p': 'updateMovie'
+    'keypress h3,p': 'updateMovie',
   },
   editMovieInfo: function (e) {
     e.preventDefault();
-    var movieEl = $(e.target).parents(".movie");
-    var movieP = $(movieEl).find("p");
-    var movieH = $(movieEl).find("h3");
-    movieP.attr("contenteditable",true);
-    movieH.attr("contenteditable",true);
-    movieP.toggleClass("editable");
-    movieH.toggleClass("editable");
-  },
+    var movieText = $(e.target).parents(".movie").find("p,h3");
+    movieText.attr("contenteditable",true);
+    movieText.toggleClass("editable");
+},
   updateMovie: function (e) {
     if(e.charCode===13){
       var movieEl = $(e.target).parents(".movie");
-      var movieP = $(movieEl).find("p");
-      var movieH = $(movieEl).find("h3");
-      movieP.attr("contenteditable",false);
-      movieH.attr("contenteditable",false);
-      movieP.toggleClass("editable");
-      movieH.toggleClass("editable");
+      var movieText = $(movieEl).find("p,h3");
+      movieText.attr("contenteditable",false);
+      movieText.toggleClass("editable");
       var movie = this.model;
-      var title = movieH.text().trim();
+      var title = movieEl.find("h3").text().trim();
       var plot =movieEl.find(".plot").text().trim();
       var release =movieEl.find(".date").text().trim();
       var rating =movieEl.find(".rating").text().trim();
