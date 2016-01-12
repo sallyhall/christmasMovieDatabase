@@ -1,5 +1,8 @@
 # Backbone Imdb
 
+Assignment for class. See it live at http://sallykingston.me/christmasMovieDatabase/.
+
+
 ## Description
 
 Create an Imdb-like app that lets you manage a list of Movies.
